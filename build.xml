@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Build" default="build" basedir="." description="Build site">
+    <target name="build">
+        <exec command="git pull --quiet" dir="." description="Fetch data from cvs repository."/>
+        <exec command="composer install --quiet" dir="." description="Install missing composer packages." />
+        <exec command="drush -y config-import" dir="web" description="Import drupal configuration."/>
+        <exec command="drush -y updatedb" dir="web" description="Run drupal update database hooks."/>
+        <foreach param="dirname" absparam="absname" target="bower">
+            <fileset dir="web/themes/custom/">
+                <type type="dir" />
+                <depth max="0" min="0" />
+            </fileset>
+        </foreach>
+    </target>
+    
+    <target name="bower" description="Install missing frontend libraries.">
+        <exec command="bower install" dir="${absname}"/>
+    </target>
+</project>
