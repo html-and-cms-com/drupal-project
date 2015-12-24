@@ -6,6 +6,7 @@ if [ ! -f web/sites/default/settings.php ]
     cp web/sites/default/default.settings.php web/sites/default/settings.php
     chmod 644 web/sites/default/settings.php
     echo "\$config_directories[CONFIG_SYNC_DIRECTORY] = '../config/sync';" >> web/sites/default/settings.php
+    echo "\$settings['hash_salt'] = '$(php -r 'print bin2hex(openssl_random_pseudo_bytes(32, $cstrong = TRUE));')';" >> web/sites/default/settings.php
 fi
 
 # Prepare the services file for installation
