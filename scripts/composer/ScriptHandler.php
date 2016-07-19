@@ -13,6 +13,15 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ScriptHandler {
 
+  protected static function getHashSaltVariableString() {
+    $cstrong = TRUE;
+    return "\n" . '$settings[\'hash_salt\'] = \'' . bin2hex(openssl_random_pseudo_bytes(32, $cstrong)) . "'; \n";
+  }
+
+  protected static function getConfigSyncDirectoryVariableString() {
+    return "\n" . '$config_directories[CONFIG_SYNC_DIRECTORY] = \'../config/sync\';' . "\n";
+  }
+
   protected static function getDrupalRoot($project_root) {
     return $project_root . '/web';
   }
@@ -37,6 +46,10 @@ class ScriptHandler {
 
     // Prepare the settings file for installation
     if (!$fs->exists($root . '/sites/default/settings.php') and $fs->exists($root . '/sites/default/default.settings.php')) {
+      // Set hash_salt
+      file_put_contents($root . '/sites/default/settings.php', static::getHashSaltVariableString(), FILE_APPEND);
+      // Set sync dir
+      file_put_contents($root . '/sites/default/settings.php', static::getConfigSyncDirectoryVariableString(), FILE_APPEND);
       $fs->copy($root . '/sites/default/default.settings.php', $root . '/sites/default/settings.php');
       $fs->chmod($root . '/sites/default/settings.php', 0666);
       $event->getIO()->write("Create a sites/default/settings.php file with chmod 0666");
