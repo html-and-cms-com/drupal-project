@@ -23,6 +23,12 @@ for item in $LIST; do
 
         if [ "$DVSTATUS" == "$DRUPAL_BOOTSTRAP_VALID_VALUE" ]; then
             echo -e "${SUCCESS}Site already installed:${NC}"
+
+            echo -e "${SUCCESS}Starting to resolving Shortcut trouble... ${NC}"
+            drush ev '\Drupal::entityManager()->getStorage("shortcut_set")->load("default")->delete();'
+            drush pmu shortcut -y
+            drush en shortcut -y
+
             echo "Starting to updating system.site uuid"
             echo "Get UUID from config sync system.site.yml"
             UUID=$(head -n 1 $WORK_PATH/config/sync/system.site.yml)
